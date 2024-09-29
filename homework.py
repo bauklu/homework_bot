@@ -1,11 +1,10 @@
 import logging
-import os
 import sys
+import os
 import requests
 import time
 
 from http import HTTPStatus
-
 from telebot import TeleBot
 from telebot.apihelper import ApiException
 from dotenv import load_dotenv
@@ -123,13 +122,14 @@ def main():
 
     while True:
         try:
+            failure_counter = 0
             response = get_api_answer(timestamp)
             logger.debug('Запрос выполнен успешно!')
             homeworks = check_response(response)
             if homeworks:
                 for homework in homeworks:
                     message = parse_status(homework)
-                    logger.info('Изменился татус проверки работы')
+                    logger.info('Изменился статус проверки работы')
                     send_message(bot, message)
             else:
                 logger.error('Изменений нет')
@@ -138,10 +138,14 @@ def main():
             timestamp = response['current_date']
             bot.polling()
         except Exception as error:
-            message = f'Сбой в работе программы: {error}'
-            logger.error('Ошибка запроса')
-            send_message(bot, message)
-            time.sleep(RETRY_PERIOD)
+            if failure_counter == 0:
+                message = f'Сбой в работе программы: {error}'
+                send_message(bot, message)
+            else:
+                logger.error('Изменений нет')
+            failure_counter += 1
+            logger.error({error})
+        time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
