@@ -119,10 +119,10 @@ def main():
     check_tokens()
     bot = TeleBot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
+    failure_counter = ''
 
     while True:
         try:
-            failure_counter = 0
             response = get_api_answer(timestamp)
             logger.debug('Запрос выполнен успешно!')
             homeworks = check_response(response)
@@ -136,14 +136,13 @@ def main():
                 message = 'Список домашних работ пуст'
                 send_message(bot, message)
             timestamp = response['current_date']
-            bot.polling()
         except Exception as error:
-            if failure_counter == 0:
+            if not failure_counter:
                 message = f'Сбой в работе программы: {error}'
                 send_message(bot, message)
             else:
-                logger.error('Изменений нет')
-            failure_counter += 1
+                logger.error('Все еще сбой соединения')
+            failure_counter = error
             logger.error({error})
         time.sleep(RETRY_PERIOD)
 
