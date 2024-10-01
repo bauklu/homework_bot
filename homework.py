@@ -58,6 +58,7 @@ def send_message(bot, message):
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logging.debug('Сообщение отправлено')
+        return
     except ApiException:
         logging.error('Ошибка отправки сообщения')
 
@@ -119,7 +120,7 @@ def main():
     check_tokens()
     bot = TeleBot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
-    failure_counter = ''
+    failure_connect = ''
 
     while True:
         try:
@@ -137,13 +138,13 @@ def main():
                 send_message(bot, message)
             timestamp = response['current_date']
         except Exception as error:
-            if not failure_counter:
+            if not failure_connect:
                 message = f'Сбой в работе программы: {error}'
-                send_message(bot, message)
+                sent_message = send_message(bot, message)
             else:
                 logger.error('Все еще сбой соединения')
-            failure_counter = error
             logger.error({error})
+            failure_connect = error if sent_message else ''
         time.sleep(RETRY_PERIOD)
 
 
