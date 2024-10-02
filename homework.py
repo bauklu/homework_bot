@@ -58,7 +58,7 @@ def send_message(bot, message):
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logging.debug('Сообщение отправлено')
-        return
+        return 'Сообщение успешно отправлено'
     except ApiException:
         logging.error('Ошибка отправки сообщения')
 
@@ -144,7 +144,7 @@ def main():
             else:
                 logger.error('Все еще сбой соединения')
             logger.error({error})
-            failure_connect = error if sent_message else ''
+            failure_connect = error if sent_message else failure_connect
         time.sleep(RETRY_PERIOD)
 
 
