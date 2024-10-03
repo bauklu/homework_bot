@@ -120,7 +120,7 @@ def main():
     check_tokens()
     bot = TeleBot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
-    failure_connect = ''
+    bad_connect = ''
 
     while True:
         try:
@@ -134,17 +134,17 @@ def main():
                     send_message(bot, message)
             else:
                 logger.error('Изменений нет')
-                message = 'Список домашних работ пуст'
+                message = 'Пока ничего нового'
                 send_message(bot, message)
             timestamp = response['current_date']
         except Exception as error:
-            if not failure_connect:
+            if bad_connect != logging.error:
                 message = f'Сбой в работе программы: {error}'
                 sent_message = send_message(bot, message)
             else:
                 logger.error('Все еще сбой соединения')
             logger.error({error})
-            failure_connect = error if sent_message else failure_connect
+            bad_connect = logging.error if sent_message else bad_connect
         time.sleep(RETRY_PERIOD)
 
 
