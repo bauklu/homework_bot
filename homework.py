@@ -138,13 +138,13 @@ def main():
                 send_message(bot, message)
             timestamp = response['current_date']
         except Exception as error:
-            if bad_connect != logging.error:
-                message = f'Сбой в работе программы: {error}'
+            message = f'Сбой в работе программы: {error}'
+            if bad_connect != message:
                 sent_message = send_message(bot, message)
             else:
                 logger.error('Все еще сбой соединения')
             logger.error({error})
-            bad_connect = logging.error if sent_message else bad_connect
+            bad_connect = message if sent_message else bad_connect
         time.sleep(RETRY_PERIOD)
 
 
